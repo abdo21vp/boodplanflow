@@ -1,0 +1,25 @@
+name: Send Daily Schedule Brief
+
+on:
+  schedule:
+    # Runs at 03:30 UTC every day -> exactly 6:30 AM Cairo time (UTC+3)
+    - cron: '30 3 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub web UI anytime
+
+jobs:
+  send-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Send Morning Briefing to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8710334517:AAHt0a-U0vJDXQcbUlaJK1fTxhGlVR1ThJQ' }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '5391126215' }}
+        run: node bot/sendBrief.js
